@@ -10,7 +10,7 @@ python3 zoom_chat_parser.py ZOOM_CHAT_FILE.txt "TEACHER_NAME" -all (optional fla
 **Notes**
 - Include your name/username as it is shown in the Zoom chat text file in the place of *TEACHER_NAME* (NOTE: use quotes around the name i.e. "Johnny A.")
 
-- To specify a certain time window to record responses, type "start" and "end" in the Zoom chat and the parser will only record the student responses within that time frame.
+- To specify a certain time window to record responses, type "start" and "end" in the Zoom chat and the parser will only record the student responses within that time frame. This can be done multiple times, and the program will record the total amount of responses from students within those time frames.
 - If you were not able to do this during the zoom call, you can edit the raw .txt file and insert these lines where you would like to start and stop the record
 - Copy and paste from below and replace *TEACHER_NAME* with your username (make sure not to add any extra spaces)
 ```
