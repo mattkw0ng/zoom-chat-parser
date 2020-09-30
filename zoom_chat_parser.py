@@ -3,6 +3,36 @@ import os
 import sys
 import re
 
+def process(database, teacher, override):
+	print("Teacher: {}\n".format(teacher))
+	i = 0
+	dictionary = {}
+	collect_data = False
+
+	while i < len(database) :
+		chat = database[i]
+		message = chat['message']
+		sender = chat['sender']
+
+		if (message == 'start' and sender == teacher):
+			collect_data = True
+		elif (message == 'end' and sender == teacher):
+			collect_data = False
+		elif collect_data or override:
+			if sender != teacher:
+				if sender in dictionary:
+					dictionary[sender].append(message)
+				else:
+					dictionary[sender] = [message]
+		i += 1
+
+	
+	print("Name: # of responses")
+	print("--------------------")
+	for key in sorted(dictionary):
+		print("{}: {}".format(key, str(len(dictionary[key]))))
+
+
 def parse(input_file):
 	# Using readline() 
 	file = open(input_file, 'r') 
@@ -23,7 +53,9 @@ def parse(input_file):
 	# Data structure: Dictionary (key: sender_name, value: array of messages)
 	regex_expression = r'(\d\d:\d\d:\d\d)	 From ([a-zA-Z\. \u4e00-\u9fff]+?)( to ([a-zA-Z\. ]+? )?(\(Privately\))?)? : (.+)'
 
-	dictionary = {}
+	
+	database = []
+	# array of dictionaries with a date, sender, and message
 
 	while True: 
 		count += 1
@@ -32,6 +64,7 @@ def parse(input_file):
 		line = file.readline() 
 		# if line is empty 
 		# end of file is reached 
+		teacher = ''
 		if not line: 
 			break
 		else:
@@ -40,21 +73,21 @@ def parse(input_file):
 				date = groups.group(1)
 				sender = groups.group(2)
 				message = groups.group(6)
-			if sender not in dictionary:
-				dictionary[sender] = [message]
-			else:
-				dictionary[sender].append(message)
+				temp_dict = {'date': date, 'sender': sender, 'message': message}
+				database.append(temp_dict)
+
 
 	file.close() 
-	print("Name: # of responses")
-	print("--------------------")
-	for key in sorted(dictionary):
-		print("{}: {}".format(key, str(len(dictionary[key]))))
+	if len(sys.argv) > 3 and sys.argv[3] == '-all':
+		process(database, sys.argv[2], True)
+	else:
+		process(database, sys.argv[2], False)
+	
 
 
 
 def main():
-
+	# python3 zoom_chat_parser.py zoom_chat.txt "Mark Kwong" (OPTION: override)
 	parse(sys.argv[1])
 	
 main()
