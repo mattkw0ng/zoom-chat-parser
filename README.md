@@ -1,10 +1,10 @@
 # zoom-chat-parser
 Takes in zoom chat .txt file and prints the name of each student found and the number of times they responded in the chat
 
-**UPDATE (v2.0)** Parser now excluded the Teacher's name from the zoom file and allows you to specify when to record student responses
+**UPDATE (v2.0)** Parser now ignores the Teacher's chats and allows you to specify when to record student responses
 - Runs with command: 
 ```
-python3 zoom_chat_parser.py zoom_chat_file.txt "TEACHER_NAME" (OPTIONAL FLAG -all)
+python3 zoom_chat_parser.py ZOOM_CHAT_FILE.txt "TEACHER_NAME" -all (optional flag)
 ```
 
 **Notes**
@@ -12,7 +12,7 @@ python3 zoom_chat_parser.py zoom_chat_file.txt "TEACHER_NAME" (OPTIONAL FLAG -al
 
 - To specify a certain time window to record responses, type "start" and "end" in the Zoom chat and the parser will only record the student responses within that time frame.
 - If you were not able to do this during the zoom call, you can edit the raw .txt file and insert these lines where you would like to start and stop the record
-- Copy and paste from below and replace *TEACHER_NAME* with your username and Make sure not to add any extra spaces
+- Copy and paste from below and replace *TEACHER_NAME* with your username (make sure not to add any extra spaces)
 ```
 00:00:00	 From TEACHER_NAME : start
 00:00:00	 From TEACHER_NAME : end
