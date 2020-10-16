@@ -3,8 +3,7 @@ import os
 import sys
 import re
 
-def process(database, teacher, override):
-	print("Teacher: {}\n".format(teacher))
+def combined_process(database, teacher, override):
 	i = 0
 	dictionary = {}
 	collect_data = False
@@ -14,24 +13,93 @@ def process(database, teacher, override):
 		message = chat['message']
 		sender = chat['sender']
 
-		if (message == 'start' and sender == teacher):
+		if ( re.match('start', message, re.IGNORECASE) and sender == teacher):
 			collect_data = True
-		elif (message == 'end' and sender == teacher):
+		elif ( re.match('end', message, re.IGNORECASE) and sender == teacher):
 			collect_data = False
 		elif collect_data or override:
 			if sender != teacher:
-				if sender in dictionary:
-					dictionary[sender].append(message)
+				name_reformatted = reformat_name(sender)
+				if name_reformatted in dictionary:
+					dictionary[name_reformatted].append(message)
 				else:
-					dictionary[sender] = [message]
+					dictionary[name_reformatted] = [message]
 		i += 1
 
-	
-	print("Name: # of responses")
-	print("--------------------")
-	for key in sorted(dictionary):
-		print("{}: {}".format(key, str(len(dictionary[key]))))
+	return dictionary
 
+def print_combined(dictionary):
+	print("--------------------")
+	print("Name: # of responses")
+	print("--------------------\n")
+	for key in sorted(dictionary,  key=str.casefold):
+		print("{}: {}".format(key, len(dictionary[key])))
+	print()
+
+
+# Calculates participation during chat sessions
+# Records the students and their number of participations
+def calculate_participation(database, teacher):
+	print("\n--------------------")
+	print("Calculating participation")
+	print("--------------------\n")
+	i = 0
+
+	dictionary = {}
+	collect_data = False
+	participation_list = []
+	chat_session = 0
+
+	while i < len(database) :
+		chat = database[i]
+		message = chat['message']
+		sender = chat['sender']
+
+		# Start recording chat responses
+		if ( re.match('start', message, re.IGNORECASE) and sender == teacher):
+			collect_data = True
+			chat_session += 1
+		# Stop recording | add all participants to dictionary and print to console
+		elif ( re.match('end', message, re.IGNORECASE) and sender == teacher):
+			collect_data = False
+			print("Participants for chat session {}:".format(chat_session))
+			for person in participation_list:
+				# Reformat the names
+				name_reformatted = reformat_name(person)
+				# Print and add names to the dictionary
+				print("- {} ({})".format(name_reformatted, person))
+				if name_reformatted in dictionary:
+					dictionary[name_reformatted] += 1
+				else:
+					dictionary[name_reformatted] = 1
+			print()
+			# Clear the list to restart
+			participation_list.clear()
+		# Add participant to list
+		elif collect_data:
+			if sender != teacher and sender not in participation_list:
+				participation_list.append(sender)
+		i += 1
+
+	print_participation(dictionary, chat_session)
+	return dictionary
+
+# Prints each student's participation percentage based on the total chat sessions
+def print_participation(dictionary, total_chat_sessions):
+	print("\n--------------------")
+	print("Participation percentages")
+	print("--------------------\n")
+	for key in sorted(dictionary,  key=str.casefold):
+		participation = dictionary.get(key)
+		percentage = (participation/total_chat_sessions)*100
+		print("{}: {:.2f}% \t({}/{})".format(key, percentage, participation, total_chat_sessions))
+	print()
+
+# Reformats the name by placing the first name behind the last | Matthew Kwong --> Kwong, Matthew
+def reformat_name(name):
+	name_separated = name.split(" ", 1)
+	name_reformatted = "{}, {}".format(name_separated[1], name_separated[0])
+	return name_reformatted
 
 def parse(input_file):
 	# Using readline() 
@@ -42,13 +110,6 @@ def parse(input_file):
 	# 09:46:01	 From Luke Farmer to Mark Kwong (Privately) : Mr. Kwong im leaving the meeting to restart my camera
 	# Regex expression 
 	# (\d\d:\d\d:\d\d)	 From ([a-zA-Z\. \u4e00-\u9fff]+?)( to ([a-zA-Z\. ]+? )?(\(Privately\))?)? : (.+)
-
-	# 1.	09:46:01
-	# 2.	Luke Farmer
-	# 3.	to Mark Kwong (Privately)
-	# 4.	Mark Kwong
-	# 5.	(Privately)
-	# 6.	Mr. Kwong im leaving the meeting to restart my camera
 
 	# Data structure: Dictionary (key: sender_name, value: array of messages)
 	regex_expression = r'(\d\d:\d\d:\d\d)	 From ([a-zA-Z\. \u4e00-\u9fff]+?)( to ([a-zA-Z\. ]+? )?(\(Privately\))?)? : (.+)'
@@ -78,11 +139,20 @@ def parse(input_file):
 
 
 	file.close() 
-	if len(sys.argv) > 3 and sys.argv[3] == '-all':
-		process(database, sys.argv[2], True)
-	else:
-		process(database, sys.argv[2], False)
+
 	
+	if len(sys.argv) > 3:
+		dictionary = {}
+		if sys.argv[3] == '-combined':
+			dictionary = combined_process(database, sys.argv[2], False)
+		elif  sys.argv[3] == '-all':
+			dictionary = combined_process(database, sys.argv[2], True)
+		print_combined(dictionary)
+
+	else:
+		calculate_participation(database,  sys.argv[2])
+
+	print("Teacher: {}\n".format(sys.argv[2]))
 
 
 
