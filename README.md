@@ -3,15 +3,18 @@ Takes in zoom chat .txt file and prints the name of each student found and the n
 
 **UPDATE (v2.0)** Parser now ignores the Teacher's chats and allows you to specify when to record student responses
 
-**UPDATE (v3.0)** Default parsing method now tracks student participation during the specified chat sessions. 
-- Prints a summary of who participated in each individual chat session as well as an overall summary of each student's participation across all of the sessions. 
-- The 'start' and 'end' commands are now case-insensitive to allow flexibility. 
-- The previous method of parsing is no longer the default, but is still available by using the flag *-combined*.
+**UPDATE (v3.0)** Default parsing method now tracks student participation during the specified chat sessions 
+- Prints a summary of who participated in each individual chat session as well as an overall summary of each student's participation across all of the sessions
+- The 'start' and 'end' commands are now case-insensitive to allow flexibility 
+- The previous method of parsing is no longer the default, but is still available by using the flag *-combined*
 
 **Terminal command**
 ```
 python3 zoom_chat_parser.py ZOOM_CHAT_FILE.txt "TEACHER_NAME" (optional flags: -combined, -all)
 ```
+**Flags**
+- *-combined* will report the total number of times each student has participated within the specified chat sessions
+- *-all* will ignore chat sessions and simply report the total number of times each student has chatted during the entire Zoom call
 
 **Notes**
 - Include your name/username as it is shown in the Zoom chat text file in the place of *TEACHER_NAME* (NOTE: use quotes around the name i.e. "Johnny A.")
@@ -23,5 +26,3 @@ python3 zoom_chat_parser.py ZOOM_CHAT_FILE.txt "TEACHER_NAME" (optional flags: -
 00:00:00	 From TEACHER_NAME : start
 00:00:00	 From TEACHER_NAME : end
 ```
-
-- If you do not want this feature and would like everything to be recorded, add the optional flag *-all* to the command line arguments
