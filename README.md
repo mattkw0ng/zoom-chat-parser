@@ -5,6 +5,7 @@ Takes in zoom chat .txt file and prints the name of each student found and the n
 
 **UPDATE (v3.0)** Default parsing method now tracks student participation during the specified chat sessions 
 - Prints a summary of who participated in each individual chat session as well as an overall summary of each student's participation across all of the sessions
+- Summaries are now sorted by last name (to the best of my ability). The usernames are split after the first name, so names such as "Johnny Smith Appleseed" would become "Smith Appleseed, Johnny", where "Smith Appleseed" is treated as the last name.
 - The 'start' and 'end' commands are now case-insensitive to allow flexibility 
 - The previous method of parsing is no longer the default, but is still available by using the flag *-combined*
 
