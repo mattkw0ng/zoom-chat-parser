@@ -111,7 +111,7 @@ def parse(input_file):
     # (\d\d:\d\d:\d\d)	 From ([a-zA-Z\. \u4e00-\u9fff]+?)( to ([a-zA-Z\. ]+? )?(\(Privately\))?)? : (.+)
 
     # Data structure: Dictionary (key: sender_name, value: array of messages)
-    regex_expression = r'(\d\d:\d\d:\d\d)\s+From ([a-zA-Z\. \u4e00-\u9fff]+?)( to ([a-zA-Z\. ]+? )?(\(Privately\))?)? : (.+)'
+    regex_expression = r'(\d\d:\d\d:\d\d)\s+From ([a-zA-Z\. \u4e00-\u9fff]+?)( to ([a-zA-Z\. \u4e00-\u9fff]+?)(\(Direct Message\))?(\(Privately\))?)? : (.+)'
 
 
     database = []
@@ -132,7 +132,7 @@ def parse(input_file):
             if groups:
                 date = groups.group(1)
                 sender = groups.group(2)
-                message = groups.group(6)
+                message = groups.group(7)
                 temp_dict = {'date': date, 'sender': sender, 'message': message}
                 database.append(temp_dict)
 
